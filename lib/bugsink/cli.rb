@@ -396,11 +396,12 @@ module Bugsink
           bugsink releases create '{"project":8,"version":"v1.0"}'
 
         Environment Variables:
-          BUGSINK_API_KEY      API authentication token (required)
-          BUGSINK_HOST         API host (default: https://bugs.kopernici.cz)
+          BUGSINK_API_KEY         API authentication token (required)
+          BUGSINK_HOST            API host (default: https://bugs.kopernici.cz)
+          BUGSINK_PROJECT_ID      Default project ID (takes precedence over .bugsink file)
 
         Configuration File:
-          .bugsink                Project ID for current directory
+          .bugsink                Project ID for current directory (ignored if BUGSINK_PROJECT_ID is set)
 
         For resource-specific help:
           bugsink help <resource>
