@@ -25,18 +25,24 @@ gem 'bugsink-cli', '~> 0.1.0'
 
 **Optional:**
 - `BUGSINK_HOST` - API host (default: `https://bugs.kopernici.cz`)
+- `BUGSINK_PROJECT_ID` - Default project ID (takes precedence over `.bugsink` file)
 
 ### Project Configuration
 
-The CLI supports a `.bugsink` dotfile in your project root to store the default project ID:
+The CLI supports two ways to set a default project ID:
 
-```bash
-# Set default project
-bugsink config set-project 8
+1. **Environment Variable (recommended for CI/CD):**
+   ```bash
+   export BUGSINK_PROJECT_ID=8
+   ```
 
-# This creates .bugsink file with:
-PROJECT_ID=8
-```
+2. **Local `.bugsink` file (recommended for development):**
+   ```bash
+   bugsink config set-project 8
+   # This creates .bugsink file with: PROJECT_ID=8
+   ```
+
+**Note:** The environment variable takes precedence over the `.bugsink` file. When `BUGSINK_PROJECT_ID` is set, the `config set-project` command will not create a `.bugsink` file.
 
 ## Quick Start
 
@@ -47,7 +53,10 @@ export BUGSINK_API_KEY="your-token-here"
 # Test connection
 bugsink config test
 
-# Set default project
+# Set default project (option 1: environment variable)
+export BUGSINK_PROJECT_ID=8
+
+# Or set default project (option 2: local file)
 bugsink config set-project 8
 
 # List latest issues
