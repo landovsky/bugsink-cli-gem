@@ -91,8 +91,11 @@ module Bugsink
         output_list(response.data, format: @options[:format])
       when 'get'
         uuid = args[0]
-        error('Team UUID required') && exit(1) unless uuid
-        parse_format_options!(args[1..])
+        unless uuid
+          error('Team UUID required')
+          exit 1
+        end
+        parse_format_options!(args[1..] || [])
         team = @client.team_get(uuid)
         output_single(team, format: @options[:format])
       when 'create'
@@ -128,8 +131,11 @@ module Bugsink
         output_list(response.data, format: @options[:format])
       when 'get'
         id = args[0]
-        error('Project ID required') && exit(1) unless id
-        parse_format_options!(args[1..])
+        unless id
+          error('Project ID required')
+          exit 1
+        end
+        parse_format_options!(args[1..] || [])
         project = @client.project_get(id.to_i)
         output_single(project, format: @options[:format])
       when 'create'
@@ -178,8 +184,11 @@ module Bugsink
         output_list(response.data, format: @options[:format])
       when 'get'
         uuid = args[0]
-        error('Issue UUID required') && exit(1) unless uuid
-        parse_format_options!(args[1..])
+        unless uuid
+          error('Issue UUID required')
+          exit 1
+        end
+        parse_format_options!(args[1..] || [])
         issue = @client.issue_get(uuid)
         output_single(issue, format: @options[:format])
       else
@@ -201,8 +210,11 @@ module Bugsink
         output_list(response.data, format: @options[:format])
       when 'get'
         uuid = args[0]
-        error('Event UUID required') && exit(1) unless uuid
-        parse_format_options!(args[1..])
+        unless uuid
+          error('Event UUID required')
+          exit 1
+        end
+        parse_format_options!(args[1..] || [])
         event = @client.event_get(uuid)
         output_single(event, format: @options[:format])
       when 'stacktrace'
@@ -226,8 +238,11 @@ module Bugsink
         output_list(response.data, format: @options[:format])
       when 'get'
         uuid = args[0]
-        error('Release UUID required') && exit(1) unless uuid
-        parse_format_options!(args[1..])
+        unless uuid
+          error('Release UUID required')
+          exit 1
+        end
+        parse_format_options!(args[1..] || [])
         release = @client.release_get(uuid)
         output_single(release, format: @options[:format])
       when 'create'
@@ -246,6 +261,8 @@ module Bugsink
     end
 
     def parse_format_options!(args)
+      return if args.nil? || args.empty?
+
       OptionParser.new do |opts|
         opts.on('--json', 'Output as JSON') { @options[:format] = 'json' }
         opts.on('--quiet', 'Minimal output') { @options[:format] = 'quiet' }
@@ -253,6 +270,8 @@ module Bugsink
     end
 
     def parse_project_options!(args)
+      return if args.nil? || args.empty?
+
       OptionParser.new do |opts|
         opts.on('--team=UUID', 'Filter by team UUID') { |v| @options[:team] = v }
         opts.on('--json', 'Output as JSON') { @options[:format] = 'json' }
@@ -261,6 +280,8 @@ module Bugsink
     end
 
     def parse_issue_options!(args)
+      return if args.nil? || args.empty?
+
       OptionParser.new do |opts|
         opts.on('--project=ID', 'Project ID') { |v| @options[:project_id] = v.to_i }
         opts.on('--sort=FIELD', 'Sort field') { |v| @options[:sort] = v }
@@ -271,6 +292,8 @@ module Bugsink
     end
 
     def parse_event_options!(args)
+      return if args.nil? || args.empty?
+
       OptionParser.new do |opts|
         opts.on('--issue=UUID', 'Issue UUID (required)') { |v| @options[:issue] = v }
         opts.on('--order=ORDER', 'Sort order (asc|desc)') { |v| @options[:order] = v }
@@ -280,6 +303,8 @@ module Bugsink
     end
 
     def parse_release_options!(args)
+      return if args.nil? || args.empty?
+
       OptionParser.new do |opts|
         opts.on('--project=ID', 'Project ID') { |v| @options[:project_id] = v.to_i }
         opts.on('--json', 'Output as JSON') { @options[:format] = 'json' }
