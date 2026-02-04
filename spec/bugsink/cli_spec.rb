@@ -61,4 +61,37 @@ RSpec.describe Bugsink::CLI do
       expect { cli.run }.to output(/Argument error/).to_stderr.and raise_error(SystemExit)
     end
   end
+
+  describe 'missing required arguments' do
+    it 'exits gracefully when teams get missing UUID' do
+      cli = described_class.new(['teams', 'get'])
+      expect { cli.run }.to output(/Team UUID required/).to_stderr.and raise_error(SystemExit)
+    end
+
+    it 'exits gracefully when projects get missing ID' do
+      cli = described_class.new(['projects', 'get'])
+      expect { cli.run }.to output(/Project ID required/).to_stderr.and raise_error(SystemExit)
+    end
+
+    it 'exits gracefully when issues get missing UUID' do
+      cli = described_class.new(['issues', 'get'])
+      expect { cli.run }.to output(/Issue UUID required/).to_stderr.and raise_error(SystemExit)
+    end
+
+    it 'exits gracefully when events get missing UUID' do
+      cli = described_class.new(['events', 'get'])
+      expect { cli.run }.to output(/Event UUID required/).to_stderr.and raise_error(SystemExit)
+    end
+
+    it 'exits gracefully when releases get missing UUID' do
+      cli = described_class.new(['releases', 'get'])
+      expect { cli.run }.to output(/Release UUID required/).to_stderr.and raise_error(SystemExit)
+    end
+
+    it 'does not raise NoMethodError when missing arguments' do
+      # Regression test for the nil.shift bug
+      cli = described_class.new(['projects', 'get'])
+      expect { cli.run }.not_to raise_error(NoMethodError)
+    end
+  end
 end
