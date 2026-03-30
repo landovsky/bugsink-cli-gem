@@ -62,6 +62,29 @@ RSpec.describe Bugsink::CLI do
     end
   end
 
+  describe 'issues resolve' do
+    it 'resolves an issue and prints result' do
+      cli = described_class.new(['issues', 'resolve', 'abc-123'])
+      issue_data = { 'id' => 'abc-123', 'is_resolved' => true }
+      allow(client).to receive(:issue_resolve).with('abc-123').and_return(issue_data)
+
+      expect { cli.run }.to output(/abc-123/).to_stdout
+    end
+
+    it 'exits gracefully when UUID is missing' do
+      cli = described_class.new(['issues', 'resolve'])
+      expect { cli.run }.to output(/Issue UUID required/).to_stderr.and raise_error(SystemExit)
+    end
+
+    it 'handles already resolved (409) gracefully' do
+      cli = described_class.new(['issues', 'resolve', 'abc-123'])
+      allow(client).to receive(:issue_resolve)
+        .and_raise(Bugsink::Client::ClientError.new('HTTP 409: Already resolved', code: 409))
+
+      expect { cli.run }.to output(/API error/).to_stderr.and raise_error(SystemExit)
+    end
+  end
+
   describe 'missing required arguments' do
     it 'exits gracefully when teams get missing UUID' do
       cli = described_class.new(['teams', 'get'])

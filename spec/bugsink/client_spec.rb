@@ -73,6 +73,38 @@ RSpec.describe Bugsink::Client do
     end
   end
 
+  describe '#issue_resolve' do
+    it 'sends POST to resolve endpoint and returns issue data' do
+      issue_data = { 'id' => 'abc-123', 'is_resolved' => true }
+      allow(described_class).to receive(:post)
+        .with('/api/canonical/0/issues/abc-123/resolve/')
+        .and_return(double(code: 200, parsed_response: issue_data))
+
+      result = client.issue_resolve('abc-123')
+      expect(result).to eq(issue_data)
+    end
+
+    it 'raises ClientError when issue is already resolved (409)' do
+      allow(described_class).to receive(:post)
+        .with('/api/canonical/0/issues/abc-123/resolve/')
+        .and_return(double(code: 409, parsed_response: 'Already resolved', body: 'Already resolved'))
+
+      expect { client.issue_resolve('abc-123') }.to raise_error(Bugsink::Client::ClientError) { |e|
+        expect(e.code).to eq(409)
+      }
+    end
+
+    it 'raises ClientError when issue not found (404)' do
+      allow(described_class).to receive(:post)
+        .with('/api/canonical/0/issues/nonexistent/resolve/')
+        .and_return(double(code: 404, parsed_response: 'Not found', body: 'Not found'))
+
+      expect { client.issue_resolve('nonexistent') }.to raise_error(Bugsink::Client::ClientError) { |e|
+        expect(e.code).to eq(404)
+      }
+    end
+  end
+
   describe '#test_connection' do
     it 'returns true on successful connection' do
       allow(described_class).to receive(:get).and_return(

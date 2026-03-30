@@ -191,9 +191,18 @@ module Bugsink
         parse_format_options!(args[1..] || [])
         issue = @client.issue_get(uuid)
         output_single(issue, format: @options[:format])
+      when 'resolve'
+        uuid = args[0]
+        unless uuid
+          error('Issue UUID required')
+          exit 1
+        end
+        parse_format_options!(args[1..] || [])
+        issue = @client.issue_resolve(uuid)
+        output_single(issue, format: @options[:format])
+        success("Issue #{uuid} resolved")
       else
         error("Unknown issues action: #{action}")
-        info('Note: Issues are read-only. Write operations not available in API.')
         exit 1
       end
     end
@@ -391,7 +400,7 @@ module Bugsink
           config      - Configuration management
           teams       - Team operations
           projects    - Project operations
-          issues      - Issue operations (read-only)
+          issues      - Issue operations
           events      - Event operations (read-only)
           releases    - Release operations
 
@@ -413,6 +422,7 @@ module Bugsink
 
           bugsink issues list --project=<id>           List issues for project
           bugsink issues get <uuid>                    Get issue details
+          bugsink issues resolve <uuid>                Resolve an issue
 
           bugsink events list --issue=<uuid>           List events for issue
           bugsink events stacktrace <uuid>             Get formatted stacktrace
@@ -443,7 +453,7 @@ module Bugsink
           # Get stacktrace for an event
           bugsink events stacktrace <event-uuid>
 
-        Note: Issues and Events are READ-ONLY via the API. Write operations are not supported.
+        Note: Events are READ-ONLY via the API.
       HELP
     end
 
@@ -518,11 +528,12 @@ module Bugsink
         HELP
       when 'issues'
         puts <<~HELP
-          bugsink issues - Issue operations (READ-ONLY)
+          bugsink issues - Issue operations
 
           Actions:
             list --project=<id> [--sort=<field>] [--order=<asc|desc>]
             get <uuid>
+            resolve <uuid>
 
           Options:
             --project=<id>    Project ID (required for list)
@@ -532,8 +543,9 @@ module Bugsink
           Examples:
             bugsink issues list --project=8 --sort=last_seen --order=desc
             bugsink issues get <uuid> --json
+            bugsink issues resolve <uuid>
 
-          Note: Issues are READ-ONLY. No write operations available in API.
+          Note: Resolve returns 409 if the issue is already resolved.
         HELP
       when 'events'
         puts <<~HELP

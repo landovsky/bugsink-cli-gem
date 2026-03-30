@@ -165,6 +165,12 @@ module Bugsink
       response.parsed_response
     end
 
+    def issue_resolve(uuid)
+      response = self.class.post("/api/canonical/0/issues/#{uuid}/resolve/")
+      check_response(response)
+      response.parsed_response
+    end
+
     # Events
     def events_list(issue_uuid:, order: 'desc', limit: 250, cursor: nil)
       query = {

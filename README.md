@@ -126,7 +126,7 @@ bugsink projects create '{
 bugsink projects update <id> '{"name":"New Name","alert_on_new_issue":false}'
 ```
 
-#### Issues (Read-Only)
+#### Issues
 
 ```bash
 # List issues for a project
@@ -137,9 +137,12 @@ bugsink issues list --project=<id> \
 
 # Get issue details
 bugsink issues get <uuid> [--json]
+
+# Resolve an issue
+bugsink issues resolve <uuid> [--json]
 ```
 
-**Note:** Issues are **read-only** via the API. You cannot update status, resolve, or add comments through the CLI.
+**Note:** The `resolve` command requires [bugsink-fork](https://github.com/landovsky/bugsink-fork), which adds the resolve API endpoint. Using it against upstream BugSink will return a 404 error.
 
 #### Events (Read-Only)
 
@@ -266,11 +269,11 @@ ee4f4572-0957-4346-b433-3c605acbfa2a
 
 - **Teams:** Create, Update
 - **Projects:** Create, Update
+- **Issues:** Resolve (requires [bugsink-fork](https://github.com/landovsky/bugsink-fork))
 - **Releases:** Create
 
 ### Read-Only Resources
 
-- **Issues:** Cannot update status, resolve, or add comments
 - **Events:** Created automatically via Sentry SDK ingestion only
 
 ### Not Supported
@@ -296,6 +299,9 @@ teams = response.data
 
 # Get project
 project = client.project_get(8)
+
+# Resolve an issue (requires bugsink-fork)
+issue = client.issue_resolve('issue-uuid')
 
 # Create release
 release = client.release_create(
